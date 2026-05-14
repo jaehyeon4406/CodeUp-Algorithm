@@ -1,0 +1,43 @@
+from collections import deque
+
+n, m = map(int, input().split())
+arr = [list(map(int, input().split())) for _ in range(n)]
+
+def bfs(col, row, arr): 
+    # 이동할 수 있는 방향 (상, 하, 좌, 우)
+    dx = [-1, 1, 0, 0]
+    dy = [0, 0, -1, 1]
+    # 방문 여부를 기록할 2차원 리스트 (0으로 초기화)
+    visited = [[0] * row for _ in range(col)]
+    
+    # 시작점 (0, 0) 좌표를 queue에 넣어줌
+    queue = deque([(0, 0)])
+    # 시작점 방문 처리 (1로 방문 처리)
+    visited[0][0] = 1
+
+    # queue가 빌 때까지 반복
+    while queue:
+        # queue에서 좌표를 하나 꺼냄
+        x, y = queue.popleft()
+        # 현재 좌표가 목표 지점 (col - 1, row - 1)이면
+        if x == col - 1 and y == row - 1:
+            # 지금 몇 번째 칸인지 반환 
+            return visited[x][y]
+
+        # 이동할 수 있는 4가지 방향에 대해 반복
+        for i in range(4):
+            # 다음 좌표 후보군 탐색
+            next_x, next_y = x + dx[i], y + dy[i]
+            # 범위 내에 있는지
+            if 0 <= next_x < col and 0 <= next_y < row:
+                # 방문한 적이 있는지 (1이면 이미 방문 한 좌표)
+                if visited[next_x][next_y] == 0:
+                    # 전달받은 arr을 사용 - 칸 간 숫자 차이가 1 이하인지
+                    if abs(arr[next_x][next_y] - arr[x][y]) <= 1:
+                        # 해당 좌표로 이동이 가능할 시 몇 번째 칸인지 기록
+                        visited[next_x][next_y] = visited[x][y] + 1
+                        # 다음 좌표 후보군을 탐색하기 위해 queue에 넣어줌
+                        queue.append((next_x, next_y))
+    return 0
+
+print(bfs(n, m, arr))
